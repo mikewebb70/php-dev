@@ -1,0 +1,62 @@
+version: '3'
+services:
+  
+  #PHP-FPM
+  php:
+    build: ./php/
+    container_name: phpfpm 
+    restart: unless-stopped
+    expose: 
+      - 9000
+    environment:
+      TZ: "Australia/Perth"
+    links:
+      - mysql
+    tty: true
+    volumes:
+      - ./www/html/:/var/www/html/
+    networks:
+      - php
+
+  #NGINX SERVICE
+  nginx:
+    build: ./nginx/
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./www/html/:/var/www/html/
+    links:
+      - php 
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      TZ: "Australia/Perth"
+    networks:
+      - php
+  
+  #MySQL database
+  mysql:
+    image: mysql:latest
+    container_name: database
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - db:/var/lib/mysql/
+    environment:
+      TZ: "Australia/Perth"
+      MYSQL_DATABASE: site
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+    networks:
+      - php
+
+networks:
+  php:
+
+volumes:
+  db:
