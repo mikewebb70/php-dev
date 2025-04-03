@@ -11,6 +11,6 @@ See http://localhost/info.php for PHP and ZEND details
 > * Credentials moved to .env file
 > * Amend Dockerfiles and docker-compose files to suit
 
-> [!> [!WARNING]
+> [!WARNING]
 > * Internal dev network use only
 > * There is no SSL. That's kind of an end user thing to sort out with own certs
