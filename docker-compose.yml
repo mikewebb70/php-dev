@@ -1,7 +1,7 @@
-version: '3'
+version: '3.8'
 services:
-  
-  #PHP-FPM
+
+  # PHP-FPM
   php:
     build: ./php/
     container_name: phpfpm 
@@ -9,8 +9,8 @@ services:
     expose: 
       - 9000
     environment:
-      TZ: "Australia/Perth"
-    links:
+      TZ: ${TZ}
+    depends_on:
       - mysql
     tty: true
     volumes:
@@ -18,7 +18,7 @@ services:
     networks:
       - php
 
-  #NGINX SERVICE
+  # NGINX SERVICE
   nginx:
     build: ./nginx/
     container_name: webserver
@@ -26,32 +26,35 @@ services:
     tty: true
     volumes:
       - ./www/html/:/var/www/html/
-    links:
+    depends_on:
       - php 
     ports:
       - "80:80"
       - "443:443"
     environment:
-      TZ: "Australia/Perth"
+      TZ: ${TZ}
     networks:
       - php
   
-  #MySQL database
+  # MySQL DATABASE
   mysql:
     image: mysql:latest
     container_name: database
     restart: unless-stopped
-    tty: true
+    security_opt:
+      - no-new-privileges:true
     ports:
+      # Note: ports are exposed as I'm hitting the database from an external application
+      # Dissable for better security if apps will be accessing it interally.
       - "3306:3306"
     volumes:
       - db:/var/lib/mysql/
     environment:
-      TZ: "Australia/Perth"
-      MYSQL_DATABASE: site
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_USER: user
-      MYSQL_PASSWORD: secret
+      TZ: ${TZ}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - php
 
@@ -60,3 +63,4 @@ networks:
 
 volumes:
   db:
+
