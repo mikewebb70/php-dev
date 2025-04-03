@@ -1,6 +1,21 @@
 version: '3.8'
 services:
 
+  # phpMyAdmin SERVICE
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    #  PMA_USER: ${MYSQL_USER}
+    #  PMA_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - php
+  
   # PHP-FPM
   php:
     build: ./php/
